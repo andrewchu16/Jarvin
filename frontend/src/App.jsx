@@ -26,11 +26,6 @@ const App = () => {
     // Handle response
     const data = await response.json();
 
-    // const data = {
-    //   text: "Hello, how can I help you?",
-    //   promptUserAgain: false,
-    // };
-
     console.log("Jarvin said:", data.text);
 
     const promptUserAgain = data.promptUserAgain;

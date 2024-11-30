@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from server import Server
 
 app = FastAPI()
-
-conversation = []
+server = Server()
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,23 +15,8 @@ app.add_middleware(
 
 @app.post("/")
 def receive_transcript(item: dict):
-    text = item.get("text")
-    conversation.append(["User", text])
+    text = item["text"]
     
-    response = "Jarvin says hi"
-    conversation.append(["Jarvin", response])
+    response = server.process_text(text)
     
-    print(text)
-    return { "text": response, 
-            "promptUserAgain": False }
-    
-
-# check database status
-
-# run tests
-
-# read slack
-
-# rebuild project
-
-# manage pull requests
+    return response
