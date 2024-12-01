@@ -48,8 +48,8 @@ class Server:
             ref = entities["branch"]
             response = self.run_tests(GITHUB_PAT, GITHUB_REPO,GITHUB_OWNER, GITHUB_WORKFLOW_ID, ref)
             
-        elif intent == "rebuild_project":
-            response = f"I could not find any build tasks on {GITHUB_REPO}. Please try again."
+        elif intent == "rebuild_project": # works
+            response = self.run_build(GITHUB_OWNER, GITHUB_REPO, "main", GITHUB_PAT)
             
         elif intent == "unknown_intent":
             response = "I'm sorry, I don't understand. Can you please try again?"
@@ -156,3 +156,21 @@ class Server:
                 return (f"Failed to merge PR #{pr_number}: {merge_response.status_code}")
         else:
             return ("No open pull requests found or failed to fetch them.")
+    
+    def run_build(self, repo_owner, repo_name, branch="r", token=None):
+        url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/build-branch.yml/dispatches"
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json"
+        }
+        payload = {
+            "ref": branch
+        }
+
+        response = requests.post(url, headers=headers, json=payload)
+
+        if response.status_code == 204:
+            return (f"Workflow triggered successfully on branch '{branch}'.")
+        else:
+            print(response.json())
+            return (f"Failed to trigger workflow: {response.status_code}")
