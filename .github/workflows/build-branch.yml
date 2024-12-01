@@ -1,0 +1,39 @@
+name: Build and Deploy to Build Branch
+
+on:
+  workflow_dispatch:  # Allows manual or programmatic trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16  # Adjust to match your project's Node.js version
+
+    # Install dependencies and build
+    - name: Install and Build
+      working-directory: frontend
+      run: |
+        npm install
+        npm run build
+
+    # Push build folder to build branch
+    - name: Deploy build folder to build branch
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git checkout --orphan build
+        git --work-tree=frontend/build add --all
+        git --work-tree=frontend/build commit -m "Deploy build"
+        git push --force origin build
