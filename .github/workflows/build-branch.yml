@@ -39,9 +39,12 @@ jobs:
 
     # Push build folder to build branch
     - name: Deploy build folder to build branch
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
         git checkout --orphan build
         git rm -rf .
         cp -R frontend/dist/. .
