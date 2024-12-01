@@ -13,7 +13,7 @@ GITHUB_WORKFLOW_ID = os.getenv("GITHUB_WORKFLOW_ID")
 class Server:
     def __init__(self):
         self.conversation = []
-        self.nlp = spacy.load('./custom_ner_model')
+        self.nlp = spacy.load('./backend/custom_ner_model')
         
     def process_text(self, text: str) -> dict:
         self.conversation.append(text)
@@ -95,14 +95,16 @@ class Server:
         headers = {
             "Authorization": f"Bearer {token}",
             "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28"
         }
 
         data = {
             "ref": ref
         }
 
+        print(f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_id}")
         response = requests.post(
-            f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_id}",
+            f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches",
             headers=headers,
             json=data,
         )
