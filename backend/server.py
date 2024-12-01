@@ -2,6 +2,7 @@ from spacy.matcher import Matcher
 from dotenv import load_dotenv
 import spacy
 import os
+import random
 import requests
 load_dotenv()
 
@@ -34,7 +35,7 @@ class Server:
         response = "I'm sorry, an unknown error occurred. Can you please try again?"
         prompt_user_again = False
         if intent == "get_database_status":
-            response = "The database is serving 6 reads per minute and 2 writes per minute."
+            response = f"The database is serving {random.randrange(10)} reads per minute and {random.randrange(4)} writes per minute."
         elif intent == "merge_pr": # works
             pass
         elif intent == "read_slack_mentions":
@@ -102,7 +103,6 @@ class Server:
             "ref": ref
         }
 
-        print(f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_id}")
         response = requests.post(
             f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches",
             headers=headers,
