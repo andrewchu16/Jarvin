@@ -36,15 +36,21 @@ class Server:
         prompt_user_again = False
         if intent == "get_database_status":
             response = f"The database is serving {random.randrange(10)} reads per minute and {random.randrange(4)} writes per minute."
+            
         elif intent == "merge_pr": # works
-            pass
+            response = self.merge_pr(GITHUB_PAT, GITHUB_REPO, GITHUB_OWNER)
+            
         elif intent == "read_slack_mentions":
-            pass
+            channel = entities["slack_channel"]
+            response = f"I could not find any mentions in the {channel} channel. Please try again."
+            
         elif intent == "run_tests": # works
             ref = entities["branch"]
             response = self.run_tests(GITHUB_PAT, GITHUB_REPO,GITHUB_OWNER, GITHUB_WORKFLOW_ID, ref)
+            
         elif intent == "rebuild_project":
             response = f"I could not find any build tasks on {GITHUB_REPO}. Please try again."
+            
         elif intent == "unknown_intent":
             response = "I'm sorry, I don't understand. Can you please try again?"
             prompt_user_again = True
@@ -114,3 +120,39 @@ class Server:
         else:
             print(response.json())
             return (f"Failed to trigger workflow: {response.status_code}")
+
+    def merge_pr(self, token, repo, owner):
+        # Step 1: Get the most recent pull request
+        url = f"https://api.github.com/repos/{owner}/{repo}/pulls"
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json"
+        }
+        params = {
+            "state": "open",
+            "sort": "updated",
+            "direction": "desc"
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 200 and response.json():
+            most_recent_pr = response.json()[0]  # Get the first PR in the list
+            pr_number = most_recent_pr["number"]
+            print(f"Most recent PR found: #{pr_number} - {most_recent_pr['title']}")
+
+            # Step 2: Merge the pull request
+            merge_url = f"https://api.github.com/repos/{owner}/{repo}/pulls/{pr_number}/merge"
+            merge_data = {
+                "commit_title": f"Merging PR #{pr_number}: {most_recent_pr['title']}",
+                "merge_method": "merge"  # Options: merge, squash, rebase
+            }
+            merge_response = requests.put(merge_url, headers=headers, json=merge_data)
+
+            if merge_response.status_code == 200:
+                return ("Pull request merged successfully!")
+            else:
+                print(merge_response.json())
+                return (f"Failed to merge PR #{pr_number}: {merge_response.status_code}")
+        else:
+            return ("No open pull requests found or failed to fetch them.")

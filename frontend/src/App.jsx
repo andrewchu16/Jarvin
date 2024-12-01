@@ -20,7 +20,7 @@ const App = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ transcript }),
+      body: JSON.stringify({ "transcript": transcript }),
     });
 
     // Handle response

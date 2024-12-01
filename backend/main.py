@@ -15,6 +15,7 @@ app.add_middleware(
 
 @app.post("/")
 def receive_transcript(item: dict):
+    print(item)
     text = item["transcript"]
     
     response = server.process_text(text)
