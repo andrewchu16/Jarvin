@@ -44,8 +44,7 @@ jobs:
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git checkout --orphan build
         git rm -rf .
-        # Copy build files to root
-        cp -R frontend/build/. .
-        git --work-tree=frontend/build add --all
-        git --work-tree=frontend/build commit -m "Deploy build"
+        cp -R frontend/dist/. .
+        git --work-tree=frontend/dist add --all
+        git --work-tree=frontend/dist commit -m "Deploy build"
         git push --force origin build
