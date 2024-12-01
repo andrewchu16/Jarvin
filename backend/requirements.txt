@@ -1,3 +1,5 @@
 spacy
 fastapi[standard]
 pytest
+python-dotenv
+requests
