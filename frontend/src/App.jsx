@@ -20,13 +20,19 @@ const App = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ "transcript": transcript }),
+      body: JSON.stringify({ transcript: transcript }),
     });
 
     // Handle response
     const data = await response.json();
 
     console.log("Jarvin said:", data.text);
+
+    // Initialize SpeechSynthesis API
+    const synth = window.speechSynthesis;
+
+    const utterance = new SpeechSynthesisUtterance(data.text);
+    synth.speak(utterance);
 
     const promptUserAgain = data.promptUserAgain;
 

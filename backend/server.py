@@ -119,7 +119,7 @@ class Server:
             return ("Workflow triggered successfully!")
         else:
             print(response.json())
-            return (f"Failed to trigger workflow: {response.status_code}")
+            return (f"I was unable to run tests. I received error code {response.status_code}")
 
     def merge_pr(self, token, repo, owner):
         # Step 1: Get the most recent pull request
@@ -153,11 +153,11 @@ class Server:
                 return ("Pull request merged successfully!")
             else:
                 print(merge_response.json())
-                return (f"Failed to merge PR #{pr_number}: {merge_response.status_code}")
+                return (f"I was unable to merge PR #{pr_number}: {merge_response.status_code}")
         else:
-            return ("No open pull requests found or failed to fetch them.")
+            return ("I could not find any open pull requests.")
     
-    def run_build(self, repo_owner, repo_name, branch="r", token=None):
+    def run_build(self, repo_owner, repo_name, branch="main", token=None):
         url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/build-branch.yml/dispatches"
         headers = {
             "Authorization": f"Bearer {token}",
@@ -170,7 +170,7 @@ class Server:
         response = requests.post(url, headers=headers, json=payload)
 
         if response.status_code == 204:
-            return (f"Workflow triggered successfully on branch '{branch}'.")
+            return (f"Right away. I have started the build task on '{branch}'.")
         else:
             print(response.json())
-            return (f"Failed to trigger workflow: {response.status_code}")
+            return (f"Sorry, I was unable to build the project. I received error code {response.status_code}")
